@@ -2,19 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+} from "@/lib/redux/features/auth/authApi";
 
 export default function VerifyOtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email");
-  const displayEmail = emailParam || "wiko@example.com";
+  const purposeParam = searchParams.get("purpose") || "password_reset";
+  const displayEmail = emailParam || "";
 
   const [digits, setDigits] = useState<string[]>(["", "", "", "", "", ""]);
   const [validationError, setValidationError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
   const [timerSeconds, setTimerSeconds] = useState(239); // 03:59 timer
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
 
   // Countdown timer effect
   useEffect(() => {
@@ -32,33 +40,31 @@ export default function VerifyOtpForm() {
   };
 
   const handleInputChange = (index: number, value: string) => {
-    // Only accept numeric single character
     const sanitized = value.replace(/[^0-9]/g, "");
     if (!sanitized) {
-      // Cleared input
       const newDigits = [...digits];
       newDigits[index] = "";
       setDigits(newDigits);
       setValidationError("");
+      setSuccessMsg("");
       return;
     }
 
-    // Handle single digit input or pasted string
     if (sanitized.length === 1) {
       const newDigits = [...digits];
       newDigits[index] = sanitized;
       setDigits(newDigits);
       setValidationError("");
+      setSuccessMsg("");
 
-      // Auto-advance focus to next input
       if (index < 5) {
         inputRefs.current[index + 1]?.focus();
       }
     } else if (sanitized.length === 6) {
-      // Full paste
       const pasted = sanitized.split("");
       setDigits(pasted);
       setValidationError("");
+      setSuccessMsg("");
       inputRefs.current[5]?.focus();
     }
   };
@@ -69,14 +75,32 @@ export default function VerifyOtpForm() {
     }
   };
 
-  const handleResend = () => {
-    if (timerSeconds > 0) return;
-    console.log("Resend OTP code clicked for email:", displayEmail);
-    setTimerSeconds(239);
+  const handleResend = async () => {
+    if (timerSeconds > 0 || isResending) return;
     setValidationError("");
+    setSuccessMsg("");
+
+    if (!displayEmail) {
+      setValidationError("Missing email address for OTP resend.");
+      return;
+    }
+
+    try {
+      await resendOtp({
+        email: displayEmail,
+        purpose: purposeParam,
+      }).unwrap();
+      setTimerSeconds(239);
+      setSuccessMsg("A new verification code has been sent to your email.");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message || err?.message || "Failed to resend OTP. Please try again."
+      );
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const otpCode = digits.join("");
@@ -85,15 +109,32 @@ export default function VerifyOtpForm() {
       return;
     }
 
+    if (!displayEmail) {
+      setValidationError("Missing email address for verification.");
+      return;
+    }
+
     setValidationError("");
-    setIsSubmitting(true);
+    setSuccessMsg("");
 
-    console.log("OTP code verified:", otpCode, "for email:", displayEmail);
+    try {
+      await verifyOtp({
+        email: displayEmail,
+        otp: otpCode,
+        purpose: purposeParam,
+      }).unwrap();
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push(`/reset-password?email=${encodeURIComponent(displayEmail)}`);
-    }, 500);
+      if (purposeParam === "signup") {
+        router.push("/login?verified=true");
+      } else {
+        router.push(`/reset-password?email=${encodeURIComponent(displayEmail)}`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message || err?.message || "Verification failed. Please try again."
+      );
+    }
   };
 
   return (
@@ -105,7 +146,7 @@ export default function VerifyOtpForm() {
         </h1>
         <p className="text-[15px] sm:text-[16px] font-normal text-[#595959] leading-[1.5] max-w-[420px]">
           We have sent you the code to your email account (
-          <span className="font-semibold text-[#0b1714]">{displayEmail}</span>
+          <span className="font-semibold text-[#0b1714]">{displayEmail || "your email"}</span>
           ), please enter the code below.
         </p>
       </div>
@@ -115,10 +156,20 @@ export default function VerifyOtpForm() {
         <div className="w-full bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
             <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span>{validationError}</span>
+        </div>
+      )}
+
+      {/* Success Banner */}
+      {successMsg && (
+        <div className="w-full bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>{successMsg}</span>
         </div>
       )}
 
@@ -153,14 +204,13 @@ export default function VerifyOtpForm() {
           <button
             type="button"
             onClick={handleResend}
-            disabled={timerSeconds > 0}
-            className={`font-semibold underline transition-colors ${
-              timerSeconds > 0
+            disabled={timerSeconds > 0 || isResending}
+            className={`font-semibold underline transition-colors ${timerSeconds > 0 || isResending
                 ? "text-[#656565] cursor-not-allowed no-underline"
                 : "text-[#08203c] hover:text-[#0b1714] cursor-pointer"
-            }`}
+              }`}
           >
-            Send Again
+            {isResending ? "Sending..." : "Send Again"}
           </button>
           {timerSeconds > 0 && (
             <span>
@@ -172,7 +222,7 @@ export default function VerifyOtpForm() {
         {/* Confirm Button */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isVerifying}
           className="
             w-full bg-[#08203c] text-white font-semibold text-[16px] leading-[1.4] py-3.5 rounded-[40px]
             hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-sm
@@ -180,7 +230,7 @@ export default function VerifyOtpForm() {
             flex items-center justify-center gap-2
           "
         >
-          {isSubmitting ? (
+          {isVerifying ? (
             <>
               <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

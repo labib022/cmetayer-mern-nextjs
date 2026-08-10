@@ -2,18 +2,29 @@
 
 interface StepBookingConfirmedProps {
   formattedScheduledVisit: string;
+  confirmedTotal: string; // e.g. "$48.60" — from booking API response
   onDone: () => void;
 }
 
 export default function StepBookingConfirmed({
   formattedScheduledVisit,
+  confirmedTotal,
   onDone,
 }: StepBookingConfirmedProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center gap-6 py-6 animate-in fade-in duration-300">
-      {/* Checkmark Circle Badge */}
+      {/* Checkmark Badge */}
       <div className="size-20 rounded-full bg-[#08203c] text-white flex items-center justify-center shadow-xl animate-bounce">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M20 6L9 17l-5-5" />
         </svg>
       </div>
@@ -23,27 +34,38 @@ export default function StepBookingConfirmed({
           Booking Confirmed!
         </h3>
         <p className="font-normal text-[15px] sm:text-[16px] text-[#656565] leading-[1.5]">
-          Your cleaning appointment has been scheduled. Our team will arrive at the requested time.
+          Your cleaning appointment has been scheduled. Our team will arrive
+          at the requested time.
         </p>
       </div>
 
-      {/* Scheduled Visit Info Box */}
-      <div className="bg-[#fafafa] border border-black/5 rounded-[16px] p-4 text-left w-full max-w-[400px]">
-        <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
-          Scheduled Visit
-        </span>
-        <span className="font-normal text-base text-[#111]">
-          {formattedScheduledVisit}
-        </span>
+      {/* Scheduled Visit + Total Info Box */}
+      <div className="bg-[#fafafa] border border-black/5 rounded-[16px] p-4 text-left w-full max-w-[400px] flex flex-col gap-3">
+        <div>
+          <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
+            Scheduled Visit
+          </span>
+          <span className="font-normal text-base text-[#111]">
+            {formattedScheduledVisit}
+          </span>
+        </div>
+
+        {confirmedTotal && (
+          <div className="border-t border-black/5 pt-3">
+            <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
+              Amount Charged
+            </span>
+            <span className="font-bold text-[22px] text-[#08203c]">
+              {confirmedTotal}
+            </span>
+          </div>
+        )}
       </div>
 
       <button
         type="button"
         onClick={onDone}
-        className="
-          mt-2 w-full max-w-[400px] bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px]
-          hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md
-        "
+        className="mt-2 w-full max-w-[400px] bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md"
       >
         Done
       </button>

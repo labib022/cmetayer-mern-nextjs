@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useResetPasswordMutation } from "@/lib/redux/features/auth/authApi";
 
 interface ResetPasswordFormState {
   newPassword: string;
@@ -11,7 +12,7 @@ interface ResetPasswordFormState {
 export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email");
+  const emailParam = searchParams.get("email") || "";
 
   const [formData, setFormData] = useState<ResetPasswordFormState>({
     newPassword: "",
@@ -21,7 +22,8 @@ export default function ResetPasswordForm() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationError, setValidationError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,31 +31,41 @@ export default function ResetPasswordForm() {
     setValidationError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.newPassword) {
       setValidationError("Please enter a new password");
       return;
     }
-    if (formData.newPassword.length < 8) {
-      setValidationError("New password must be at least 8 characters");
+    if (formData.newPassword.length < 6) {
+      setValidationError("New password must be at least 6 characters");
       return;
     }
     if (formData.newPassword !== formData.confirmPassword) {
       setValidationError("Passwords do not match");
       return;
     }
+    if (!emailParam) {
+      setValidationError("Missing email address. Please request a new password reset OTP.");
+      return;
+    }
 
     setValidationError("");
-    setIsSubmitting(true);
 
-    console.log("Resetting password for email:", emailParam, "New Password:", formData.newPassword);
+    try {
+      await resetPassword({
+        email: emailParam,
+        new_password: formData.newPassword,
+        confirm_password: formData.confirmPassword,
+      }).unwrap();
 
-    setTimeout(() => {
-      setIsSubmitting(false);
       router.push("/login");
-    }, 500);
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message || err?.message || "Failed to reset password. Please try again."
+      );
+    }
   };
 
   return (
@@ -73,7 +85,7 @@ export default function ResetPasswordForm() {
         <div className="w-full bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
             <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span>{validationError}</span>
@@ -159,7 +171,7 @@ export default function ResetPasswordForm() {
         {/* Reset Password Button */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isLoading}
           className="
             mt-2 w-full bg-[#08203c] text-white font-semibold text-[16px] leading-[1.4] py-3.5 rounded-[40px]
             hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-sm
@@ -167,7 +179,7 @@ export default function ResetPasswordForm() {
             flex items-center justify-center gap-2
           "
         >
-          {isSubmitting ? (
+          {isLoading ? (
             <>
               <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

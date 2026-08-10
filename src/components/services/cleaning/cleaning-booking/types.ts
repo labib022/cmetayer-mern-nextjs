@@ -1,4 +1,9 @@
 export interface CleaningBookingForm {
+  // Contact info (required by bookCleaning endpoint)
+  name: string;
+  email: string;
+  phone: string;
+  // Service config
   bedrooms: number;
   bathrooms: number;
   serviceCategory: string;
@@ -11,9 +16,10 @@ export interface CleaningBookingModalProps {
   onClose: () => void;
 }
 
+// Mirrors the real /cleaning/price API response shape
 export interface CleaningOrderSummary {
-  subtotal: string;
-  tax: string;
-  total: string;
-  discountAmount: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  discount_amount: number;
 }

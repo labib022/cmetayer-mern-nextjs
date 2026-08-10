@@ -2,16 +2,42 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { useSignInMutation } from "@/lib/redux/features/auth/authApi";
+import { setCredentials } from "@/lib/redux/features/auth/authSlice";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [signIn, { isLoading }] = useSignInMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: implement sign-in logic
-    console.log("Sign in:", { email, password });
+    setErrorMessage("");
+
+    try {
+      const res = await signIn({ email, password }).unwrap();
+      dispatch(
+        setCredentials({
+          access: res.access,
+          refresh: res.refresh,
+          user: res.user,
+        })
+      );
+      router.push("/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setErrorMessage(
+        err?.data?.message || err?.message || "Failed to sign in. Please try again."
+      );
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -31,6 +57,26 @@ export default function LoginForm() {
         </p>
       </div>
 
+      {/* Error Message Banner */}
+      {errorMessage && (
+        <div className="w-full bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="shrink-0"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
         {/* Email Field */}
@@ -45,7 +91,10 @@ export default function LoginForm() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setErrorMessage("");
+            }}
             placeholder="Enter your email address"
             required
             className="w-full border border-[#e8ede4] rounded-lg px-3 py-3 text-[14px] font-normal text-[#0b1714] placeholder:text-[#656565] leading-[1.4] outline-none focus:border-[#08203c] focus:ring-1 focus:ring-[#08203c] transition-colors bg-white"
@@ -65,7 +114,10 @@ export default function LoginForm() {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrorMessage("");
+              }}
               placeholder="Enter your password"
               required
               className="w-full border border-[#e8ede4] rounded-lg px-3 py-3 pr-10 text-[14px] font-normal text-[#0b1714] placeholder:text-[#656565] leading-[1.4] outline-none focus:border-[#08203c] focus:ring-1 focus:ring-[#08203c] transition-colors bg-white"
@@ -128,9 +180,36 @@ export default function LoginForm() {
         <button
           type="submit"
           id="sign-in-button"
-          className="w-full bg-[#08203c] hover:bg-[#0a2a4e] active:bg-[#061828] text-white font-semibold text-[16px] leading-[1.4] py-4 rounded-[40px] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-sm"
+          disabled={isLoading}
+          className="w-full bg-[#08203c] hover:bg-[#0a2a4e] active:bg-[#061828] text-white font-semibold text-[16px] leading-[1.4] py-4 rounded-[40px] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-sm disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
-          Sign in
+          {isLoading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              <span>Signing in...</span>
+            </>
+          ) : (
+            <span>Sign in</span>
+          )}
         </button>
       </form>
 
@@ -150,7 +229,6 @@ export default function LoginForm() {
         onClick={handleGoogleSignIn}
         className="w-full bg-[#0b1714] text-white font-medium text-[16px] leading-[24px] py-[10px] px-4 rounded-[40px] flex items-center justify-center gap-3 border border-[#0b1714] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer"
       >
-        {/* Official Google logo SVG */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"

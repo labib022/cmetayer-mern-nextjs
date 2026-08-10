@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSendOtpMutation } from "@/lib/redux/features/auth/authApi";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [validationError, setValidationError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sendOtp, { isLoading }] = useSendOtpMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim() || !email.includes("@")) {
@@ -18,14 +20,16 @@ export default function ForgotPasswordForm() {
     }
 
     setValidationError("");
-    setIsSubmitting(true);
 
-    console.log("Sending password reset code to:", email);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
-    }, 500);
+    try {
+      await sendOtp({ email }).unwrap();
+      router.push(`/verify-otp?email=${encodeURIComponent(email)}&purpose=password_reset`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message || err?.message || "Failed to send verification code. Please try again."
+      );
+    }
   };
 
   return (
@@ -47,7 +51,7 @@ export default function ForgotPasswordForm() {
         <div className="w-full bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
             <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span>{validationError}</span>
@@ -81,7 +85,7 @@ export default function ForgotPasswordForm() {
         {/* Send a Code Button */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isLoading}
           className="
             w-full bg-[#08203c] text-white font-semibold text-[16px] leading-[1.4] py-3.5 rounded-[40px]
             hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-sm
@@ -89,7 +93,7 @@ export default function ForgotPasswordForm() {
             flex items-center justify-center gap-2
           "
         >
-          {isSubmitting ? (
+          {isLoading ? (
             <>
               <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
