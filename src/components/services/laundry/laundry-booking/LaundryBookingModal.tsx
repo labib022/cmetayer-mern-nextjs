@@ -163,9 +163,9 @@ export default function LaundryBookingModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
       {/* Modal Container Card */}
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[800px] p-6 sm:p-8 relative flex flex-col gap-6 my-auto border border-black/5">
+      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[800px] max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative flex flex-col gap-6 border border-black/5">
         {/* Top Header: Title, Step Counter, Close X Button */}
         <div className="flex items-center justify-between w-full border-b border-black/5 pb-4">
           <div className="flex flex-col gap-1">

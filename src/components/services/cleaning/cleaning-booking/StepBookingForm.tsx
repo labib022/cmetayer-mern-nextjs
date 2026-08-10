@@ -40,11 +40,11 @@ function InputField({
   required?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="font-semibold text-[15px] text-[#08203c]">
+    <div className="flex flex-col gap-1">
+      <label htmlFor={id} className="font-semibold text-[13px] text-[#08203c]">
         {label}
       </label>
-      <div className="bg-[#fafafa] border border-black/5 rounded-[14px] px-3.5 py-3 focus-within:border-[#08203c]/40 transition-colors">
+      <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2 focus-within:border-[#08203c]/40 transition-colors">
         <input
           id={id}
           name={name}
@@ -64,8 +64,8 @@ function InputField({
 function SkeletonRow() {
   return (
     <div className="flex justify-between items-center">
-      <div className="h-3.5 w-28 bg-black/8 rounded animate-pulse" />
-      <div className="h-3.5 w-12 bg-black/8 rounded animate-pulse" />
+      <div className="h-3 w-28 bg-black/8 rounded animate-pulse" />
+      <div className="h-3 w-12 bg-black/8 rounded animate-pulse" />
     </div>
   );
 }
@@ -86,16 +86,14 @@ export default function StepBookingForm({
   onBack,
   onNext,
 }: StepBookingFormProps) {
-  const fmt = (n: number) => `$${n.toFixed(2)}`;
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in duration-300">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start animate-in fade-in duration-300">
       {/* ── Left Column — Form Inputs (7 cols) ────────────────────────────── */}
-      <div className="lg:col-span-7 flex flex-col gap-5">
+      <div className="lg:col-span-7 flex flex-col gap-3">
 
         {/* Contact Info */}
-        <div className="flex flex-col gap-3">
-          <span className="font-semibold text-[15px] text-[#08203c]">
+        <div className="flex flex-col gap-2">
+          <span className="font-semibold text-[13px] text-[#08203c]">
             Contact Info
           </span>
           <InputField
@@ -127,31 +125,31 @@ export default function StepBookingForm({
         </div>
 
         {/* Home Size Steppers */}
-        <div className="flex flex-col gap-3">
-          <span className="font-semibold text-[15px] text-[#08203c]">
+        <div className="flex flex-col gap-2">
+          <span className="font-semibold text-[13px] text-[#08203c]">
             Home Size
           </span>
 
           {/* Bedrooms */}
-          <div className="bg-[#fafafa] border border-black/5 rounded-[14px] p-3.5 flex items-center justify-between">
+          <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2.5 flex items-center justify-between">
             <span className="font-medium text-sm text-[#444]">Bedrooms</span>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => onBedroomChange(-1)}
                 aria-label="Decrease bedrooms"
-                className="size-8 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-base transition-colors cursor-pointer"
+                className="size-7 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 -
               </button>
-              <span className="font-semibold text-base text-[#0b1714] w-4 text-center">
+              <span className="font-semibold text-sm text-[#0b1714] w-4 text-center">
                 {formData.bedrooms}
               </span>
               <button
                 type="button"
                 onClick={() => onBedroomChange(1)}
                 aria-label="Increase bedrooms"
-                className="size-8 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-base transition-colors cursor-pointer"
+                className="size-7 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 +
               </button>
@@ -159,25 +157,25 @@ export default function StepBookingForm({
           </div>
 
           {/* Bathrooms */}
-          <div className="bg-[#fafafa] border border-black/5 rounded-[14px] p-3.5 flex items-center justify-between">
+          <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2.5 flex items-center justify-between">
             <span className="font-medium text-sm text-[#444]">Bathrooms</span>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => onBathroomChange(-1)}
                 aria-label="Decrease bathrooms"
-                className="size-8 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-base transition-colors cursor-pointer"
+                className="size-7 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 -
               </button>
-              <span className="font-semibold text-base text-[#0b1714] w-4 text-center">
+              <span className="font-semibold text-sm text-[#0b1714] w-4 text-center">
                 {formData.bathrooms}
               </span>
               <button
                 type="button"
                 onClick={() => onBathroomChange(1)}
                 aria-label="Increase bathrooms"
-                className="size-8 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-base transition-colors cursor-pointer"
+                className="size-7 rounded-full bg-white border border-black/10 hover:bg-[#08203c] hover:text-white text-[#0b1714] flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 +
               </button>
@@ -186,14 +184,14 @@ export default function StepBookingForm({
         </div>
 
         {/* Service Category */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <label
             htmlFor="cleaning-category"
-            className="font-semibold text-[15px] text-[#08203c]"
+            className="font-semibold text-[13px] text-[#08203c]"
           >
             Service Category
           </label>
-          <div className="bg-[#fafafa] border border-black/5 rounded-[14px] px-3.5 py-3 focus-within:border-[#08203c]/40 transition-colors">
+          <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2 focus-within:border-[#08203c]/40 transition-colors">
             <select
               id="cleaning-category"
               name="serviceCategory"
@@ -211,17 +209,17 @@ export default function StepBookingForm({
         </div>
 
         {/* Service Date & Time */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <label
             htmlFor="cleaning-datetime"
-            className="font-semibold text-[15px] text-[#08203c]"
+            className="font-semibold text-[13px] text-[#08203c]"
           >
             Service Date &amp; Time
           </label>
-          <div className="bg-[#fafafa] border border-black/5 rounded-[14px] px-3.5 py-3 flex items-center gap-3 focus-within:border-[#08203c]/40 transition-colors">
+          <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2 flex items-center gap-2.5 focus-within:border-[#08203c]/40 transition-colors">
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#08203c"
@@ -245,14 +243,14 @@ export default function StepBookingForm({
         </div>
 
         {/* Frequency */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <label
             htmlFor="cleaning-frequency"
-            className="font-semibold text-[15px] text-[#08203c]"
+            className="font-semibold text-[13px] text-[#08203c]"
           >
             Frequency
           </label>
-          <div className="bg-[#fafafa] border border-black/5 rounded-[14px] px-3.5 py-3 focus-within:border-[#08203c]/40 transition-colors">
+          <div className="bg-[#fafafa] border border-black/5 rounded-[12px] px-3 py-2 focus-within:border-[#08203c]/40 transition-colors">
             <select
               id="cleaning-frequency"
               name="frequency"
@@ -271,60 +269,38 @@ export default function StepBookingForm({
       </div>
 
       {/* ── Right Column — Live Order Summary (5 cols) ─────────────────────── */}
-      <div className="lg:col-span-5 bg-[#fafafa] border border-black/5 rounded-[20px] p-5 flex flex-col gap-4 shadow-sm">
-        <h3 className="font-semibold text-[17px] text-[#08203c] border-b border-black/5 pb-3 flex items-center gap-2">
+      <div className="lg:col-span-5 bg-[#fafafa] border border-black/5 rounded-[18px] p-3.5 flex flex-col gap-2.5 shadow-sm">
+        <h3 className="font-semibold text-[15px] text-[#08203c] border-b border-black/5 pb-2.5 flex items-center gap-2">
           Order Summary
           {priceLoading && (
-            <span className="size-3.5 border-2 border-[#08203c]/30 border-t-[#08203c] rounded-full animate-spin" />
+            <span className="size-3 border-2 border-[#08203c]/30 border-t-[#08203c] rounded-full animate-spin" />
           )}
         </h3>
 
         {/* Price Error */}
         {priceError && !priceLoading && (
-          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-[10px] px-3 py-2">
+          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-[8px] px-2.5 py-1.5">
             Price unavailable — please try again or adjust your selection.
           </p>
         )}
 
-        <div className="flex flex-col gap-3 text-sm text-[#444]">
+        <div className="flex flex-col gap-2 text-sm text-[#444]">
           {priceLoading ? (
             <>
               <SkeletonRow />
               <SkeletonRow />
-              <SkeletonRow />
             </>
-          ) : priceData ? (
-            <>
-              {/* Space + Category Subtotal */}
-              <div className="flex justify-between items-center">
-                <span>
-                  {formData.bedrooms} Bed, {formData.bathrooms} Bath
-                  {" · "}
-                  <span className="truncate">{formData.serviceCategory}</span>
-                </span>
-                <span className="font-semibold text-[#0b1714] shrink-0 ml-2">
-                  {fmt(priceData.subtotal + priceData.discount_amount)}
-                </span>
-              </div>
-
-              {/* Frequency Discount */}
-              {priceData.discount_amount > 0 && (
-                <div className="flex justify-between items-center text-green-700">
-                  <span>Frequency Discount</span>
-                  <span className="font-semibold">
-                    -{fmt(priceData.discount_amount)}
-                  </span>
-                </div>
-              )}
-
-              {/* Taxes */}
-              <div className="flex justify-between items-center text-[#656565]">
-                <span>Taxes</span>
-                <span className="font-semibold text-[#0b1714]">
-                  {fmt(priceData.tax)}
-                </span>
-              </div>
-            </>
+          ) : priceData != null ? (
+            <div className="flex justify-between items-start gap-2">
+              <span className="leading-snug text-[13px]">
+                {formData.bedrooms} Bed, {formData.bathrooms} Bath
+                {" · "}
+                <span className="truncate">{formData.serviceCategory}</span>
+              </span>
+              <span className="font-semibold text-[13px] text-[#0b1714] shrink-0 ml-2">
+                Estimated Price
+              </span>
+            </div>
           ) : (
             // No data yet and no error — empty placeholder rows
             <>
@@ -335,26 +311,26 @@ export default function StepBookingForm({
         </div>
 
         {/* Total */}
-        <div className="border-t border-black/10 pt-4 mt-2 flex justify-between items-end">
-          <span className="font-semibold text-base text-[#08203c]">Total</span>
+        <div className="border-t border-black/10 pt-3 mt-1 flex justify-between items-end">
+          <span className="font-semibold text-sm text-[#08203c]">Total</span>
           {priceLoading ? (
-            <div className="h-8 w-24 bg-black/8 rounded animate-pulse" />
-          ) : priceData ? (
-            <span className="font-bold text-[28px] sm:text-[32px] text-[#08203c] leading-none">
-              {fmt(priceData.total)}
+            <div className="h-7 w-20 bg-black/8 rounded animate-pulse" />
+          ) : priceData != null ? (
+            <span className="font-bold text-[24px] text-[#08203c] leading-none">
+              {`$${priceData.price.toFixed(2)}`}
             </span>
           ) : (
-            <span className="text-sm text-[#999]">—</span>
+            <span className="text-sm text-[#999]">Calculating...</span>
           )}
         </div>
       </div>
 
       {/* ── Booking Error Banner ───────────────────────────────────────────── */}
       {bookingError && (
-        <div className="lg:col-span-12 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-[14px] flex items-start gap-2">
+        <div className="lg:col-span-12 bg-red-50 border border-red-200 text-red-700 text-sm px-3.5 py-2.5 rounded-[12px] flex items-start gap-2">
           <svg
-            width="16"
-            height="16"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -370,12 +346,12 @@ export default function StepBookingForm({
       )}
 
       {/* ── Action Buttons ─────────────────────────────────────────────────── */}
-      <div className="lg:col-span-12 flex gap-3 mt-2">
+      <div className="lg:col-span-12 flex gap-3">
         <button
           type="button"
           onClick={onBack}
           disabled={isSubmitting}
-          className="flex-1 bg-[#f4f5f6] hover:bg-[#e4e5e6] text-[#0b1714] font-semibold text-base py-3.5 rounded-[24px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-[#f4f5f6] hover:bg-[#e4e5e6] text-[#0b1714] font-semibold text-sm py-2.5 rounded-[20px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Back
         </button>
@@ -383,7 +359,7 @@ export default function StepBookingForm({
           type="button"
           onClick={onNext}
           disabled={isSubmitting || priceLoading}
-          className="flex-1 bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="flex-1 bg-[#08203c] text-white font-semibold text-sm py-2.5 rounded-[20px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {isSubmitting ? (
             <>
@@ -396,7 +372,7 @@ export default function StepBookingForm({
           ) : (
             <>
               <span>Confirm Booking</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                 <path
                   d="M3 8h10M9 4.5l3.5 3.5L9 11.5"
                   stroke="white"

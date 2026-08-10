@@ -20,10 +20,8 @@ export const FREQUENCY_MAP: Record<string, string> = {
 // ── Response Types ─────────────────────────────────────────────────────────────
 
 export interface PriceResponse {
-  subtotal: number;
-  tax: number;
-  total: number;
-  discount_amount: number;
+  /** The single estimated price returned by the backend. */
+  price: number;
 }
 
 export interface BookingResponse {
