@@ -2,42 +2,40 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import BookingModal from "./BookingModal";
+import CleaningBookingModal from "../cleaning-booking/CleaningBookingModal";
 
 const includedServices = [
-  "Professional packing with quality materials",
-  "Careful loading and unloading",
-  "Secure transportation in modern vehicles",
-  "Furniture disassembly and reassembly",
-  "Unpacking and setup in your new home",
+  "Standard home cleaning",
+  "Deep cleaning services",
+  "Move-in/move-out cleaning",
+  "Recurring maid services",
+  "Custom cleaning plans",
 ];
 
-export default function MovingDetailSection() {
+export default function CleaningDetailSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <section className="w-full px-5 sm:px-10 lg:px-20 py-12 sm:py-16">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full max-w-[1280px] mx-auto">
-        {/* Left Column: Description & Included Services Checklist */}
+        {/* Left Column: About Us & Included Services Checklist */}
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <h2 className="font-medium text-[28px] sm:text-[34px] leading-[1.2] text-[#08203c] tracking-[-0.96px]">
-              Service Overview
+              About Us
             </h2>
             <p className="font-normal text-[16px] sm:text-[18px] leading-[1.6] text-[#444]">
-              Our moving and packing services ensure a seamless relocation.
-              Whether you&apos;re moving locally or nationally, our skilled team
-              manages everything from packing to transportation. With Easy Lift
-              &amp; Clean, your belongings are safe with us. We use top-quality
-              materials and techniques to protect your items. Let us handle the
-              moving stress, so you can focus on your new home.
+              Easy Lift &amp; Clean provides top-notch home cleaning services.
+              Our skilled team offers everything from standard cleaning to deep
+              cleans, move-in/move-out services, and recurring maid services. We
+              ensure your home sparkles! Book today for a spotless experience!
             </p>
           </div>
 
           {/* Included Services Checklist */}
           <div className="flex flex-col gap-5 pt-2">
             <h3 className="font-semibold text-[20px] text-[#08203c]">
-              Included Services
+              Our Services
             </h3>
             <ul className="flex flex-col gap-3.5">
               {includedServices.map((service) => (
@@ -71,8 +69,8 @@ export default function MovingDetailSection() {
         {/* Right Column: Featured Image Card with Price Tag & Book Now Button */}
         <div className="relative w-full h-[400px] sm:h-[480px] rounded-[24px] overflow-hidden shadow-2xl group border border-black/5">
           <Image
-            src="/images/hero-moving.png"
-            alt="Moving and Packing Professionals"
+            src="/images/service-cleaning.png"
+            alt="Professional Cleaner at work"
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -84,10 +82,10 @@ export default function MovingDetailSection() {
           <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-white/90 rounded-[20px] p-4 sm:p-5 flex items-center justify-between border border-white/60 shadow-xl z-10">
             <div className="flex flex-col">
               <span className="text-xs font-semibold uppercase text-[#656565] tracking-wider">
-                Starting Rate
+                Start from
               </span>
               <span className="font-bold text-[24px] sm:text-[28px] text-[#08203c]">
-                $75<span className="text-sm font-normal text-[#656565]">/hr</span>
+                $45<span className="text-sm font-normal text-[#656565]">/hr</span>
               </span>
             </div>
 
@@ -122,8 +120,8 @@ export default function MovingDetailSection() {
         </div>
       </div>
 
-      {/* Multi-Step Booking Modal */}
-      <BookingModal
+      {/* Cleaning Booking Modal */}
+      <CleaningBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
