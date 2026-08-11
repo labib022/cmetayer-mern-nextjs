@@ -79,6 +79,7 @@ export default function SignUpForm() {
       }).unwrap();
 
       router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}&purpose=signup`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setValidationError(
         err?.data?.message || err?.message || "Registration failed. Please try again."

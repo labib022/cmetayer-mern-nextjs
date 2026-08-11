@@ -61,6 +61,7 @@ export default function ResetPasswordForm() {
       }).unwrap();
 
       router.push("/login");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setValidationError(
         err?.data?.message || err?.message || "Failed to reset password. Please try again."

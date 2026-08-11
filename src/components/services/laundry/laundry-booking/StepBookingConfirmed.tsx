@@ -2,11 +2,13 @@
 
 interface StepBookingConfirmedProps {
   formattedScheduledVisit: string;
+  confirmedTotal: string;
   onDone: () => void;
 }
 
 export default function StepBookingConfirmed({
   formattedScheduledVisit,
+  confirmedTotal,
   onDone,
 }: StepBookingConfirmedProps) {
   return (
@@ -28,22 +30,32 @@ export default function StepBookingConfirmed({
       </div>
 
       {/* Scheduled Visit Info Box */}
-      <div className="bg-[#fafafa] border border-black/5 rounded-[16px] p-4 text-left w-full max-w-[400px]">
-        <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
-          Scheduled Visit
-        </span>
-        <span className="font-normal text-base text-[#111]">
-          {formattedScheduledVisit}
-        </span>
+      <div className="bg-[#fafafa] border border-black/5 rounded-[16px] p-4 text-left w-full max-w-[400px] flex flex-col gap-3">
+        <div>
+          <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
+            Scheduled Visit
+          </span>
+          <span className="font-normal text-base text-[#111]">
+            {formattedScheduledVisit}
+          </span>
+        </div>
+
+        {confirmedTotal && (
+          <div className="border-t border-black/5 pt-3">
+            <span className="font-semibold text-xs text-[#08203c] uppercase tracking-wider block mb-1">
+              Total Charged
+            </span>
+            <span className="font-bold text-[22px] text-[#08203c] leading-none">
+              {confirmedTotal}
+            </span>
+          </div>
+        )}
       </div>
 
       <button
         type="button"
         onClick={onDone}
-        className="
-          mt-2 w-full max-w-[400px] bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px]
-          hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md
-        "
+        className="mt-2 w-full max-w-[400px] bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md"
       >
         Done
       </button>
