@@ -6,6 +6,7 @@ import { RepairBookingForm } from "./types";
 interface StepRequestQuoteProps {
   formData: RepairBookingForm;
   categoryOptions: string[];
+  isSubmitting?: boolean;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
@@ -16,6 +17,7 @@ interface StepRequestQuoteProps {
 export default function StepRequestQuote({
   formData,
   categoryOptions,
+  isSubmitting = false,
   onChange,
   onPhotoChange,
   onSubmit,
@@ -23,6 +25,7 @@ export default function StepRequestQuote({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileDropzoneClick = () => {
+    if (isSubmitting) return;
     fileInputRef.current?.click();
   };
 
@@ -185,16 +188,20 @@ export default function StepRequestQuote({
       <button
         type="button"
         onClick={onSubmit}
+        disabled={isSubmitting}
         className="
           mt-2 w-full bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px]
           flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]
           transition-all duration-200 cursor-pointer shadow-md
+          disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
         "
       >
-        <span>Submit Request</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4.5l3.5 3.5L9 11.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <span>{isSubmitting ? "Submitting..." : "Submit Request"}</span>
+        {!isSubmitting && (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4.5l3.5 3.5L9 11.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
       </button>
     </div>
   );

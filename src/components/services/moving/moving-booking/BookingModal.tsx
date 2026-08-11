@@ -6,6 +6,7 @@ import StepLocationTiming from "./StepLocationTiming";
 import StepScopeOfMove from "./StepScopeOfMove";
 import StepContactInfo from "./StepContactInfo";
 import StepThankYou from "./StepThankYou";
+import { useSubmitQuoteMutation } from "@/lib/redux/features/quote/quoteApi";
 
 const initialFormState: MovingBookingForm = {
   pickupAddress: "",
@@ -40,6 +41,8 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [formData, setFormData] = useState<MovingBookingForm>(initialFormState);
   const [customHeavyItem, setCustomHeavyItem] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
+
+  const [submitQuote, { isLoading: isSubmitting }] = useSubmitQuoteMutation();
 
   if (!isOpen) return null;
 
@@ -142,10 +145,31 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     if (validateStep2()) setStep(3);
   };
 
-  const handleSubmitFromStep3 = () => {
-    if (validateStep3()) {
-      console.log("Moving Booking Form Submitted:", formData);
+  const handleSubmitFromStep3 = async () => {
+    if (!validateStep3()) return;
+
+    try {
+      await submitQuote({
+        service: "moving",
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        pickup_address: formData.pickupAddress,
+        dropoff_address: formData.dropoffAddress,
+        move_date: formData.moveDate,
+        home_size: formData.homeSize,
+        heavy_items: formData.heavyItems,
+        needs_packing: formData.needsPacking === true,
+      }).unwrap();
+
       setStep(4);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message ||
+        err?.message ||
+        "Something went wrong submitting your request. Please try again."
+      );
     }
   };
 
@@ -194,7 +218,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
           </div>
         )}
 
-        {/* Validation Error Banner */}
+        {/* Validation / Submission Error Banner */}
         {validationError && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -234,6 +258,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         {step === 3 && (
           <StepContactInfo
             formData={formData}
+            isSubmitting={isSubmitting}
             onChange={handleInputChange}
             onBack={handleBack}
             onSubmit={handleSubmitFromStep3}

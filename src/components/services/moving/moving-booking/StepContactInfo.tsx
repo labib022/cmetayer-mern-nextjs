@@ -4,6 +4,7 @@ import { MovingBookingForm } from "./types";
 
 interface StepContactInfoProps {
   formData: MovingBookingForm;
+  isSubmitting?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onBack: () => void;
   onSubmit: () => void;
@@ -11,6 +12,7 @@ interface StepContactInfoProps {
 
 export default function StepContactInfo({
   formData,
+  isSubmitting = false,
   onChange,
   onBack,
   onSubmit,
@@ -77,9 +79,11 @@ export default function StepContactInfo({
         <button
           type="button"
           onClick={onBack}
+          disabled={isSubmitting}
           className="
             flex-1 bg-[#f4f5f6] hover:bg-[#e4e5e6] text-[#0b1714] font-semibold text-base py-3.5 rounded-[24px]
             hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
           "
         >
           Back
@@ -87,16 +91,20 @@ export default function StepContactInfo({
         <button
           type="button"
           onClick={onSubmit}
+          disabled={isSubmitting}
           className="
             flex-1 bg-[#08203c] text-white font-semibold text-base py-3.5 rounded-[24px]
             flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]
             transition-all duration-200 cursor-pointer shadow-md
+            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
           "
         >
-          <span>Submit Request</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8h10M9 4.5l3.5 3.5L9 11.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <span>{isSubmitting ? "Submitting..." : "Submit Request"}</span>
+          {!isSubmitting && (
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4.5l3.5 3.5L9 11.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RepairBookingForm, RepairBookingModalProps } from "./types";
 import StepRequestQuote from "./StepRequestQuote";
 import StepRequestReceived from "./StepRequestReceived";
+import { useSubmitQuoteMutation } from "@/lib/redux/features/quote/quoteApi";
 
 const categoryOptions = [
   "Plumbing Repairs & Installations",
@@ -30,6 +31,8 @@ export default function RepairBookingModal({
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<RepairBookingForm>(initialFormState);
   const [validationError, setValidationError] = useState<string>("");
+
+  const [submitQuote, { isLoading: isSubmitting }] = useSubmitQuoteMutation();
 
   if (!isOpen) return null;
 
@@ -78,13 +81,28 @@ export default function RepairBookingModal({
     return true;
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      console.log("Home Repair Booking Form Submitted:", {
-        ...formData,
-        photo: formData.photo ? formData.photo.name : null,
-      });
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      await submitQuote({
+        service: "repair",
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        service_category: formData.serviceCategory,
+        issue_description: formData.issueDescription,
+        photo: formData.photo,
+      }).unwrap();
+
       setStep(2);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setValidationError(
+        err?.data?.message ||
+        err?.message ||
+        "Something went wrong submitting your request. Please try again."
+      );
     }
   };
 
@@ -111,7 +129,7 @@ export default function RepairBookingModal({
           </button>
         </div>
 
-        {/* Validation Error Banner */}
+        {/* Validation / Submission Error Banner */}
         {validationError && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -128,6 +146,7 @@ export default function RepairBookingModal({
           <StepRequestQuote
             formData={formData}
             categoryOptions={categoryOptions}
+            isSubmitting={isSubmitting}
             onChange={handleInputChange}
             onPhotoChange={handlePhotoChange}
             onSubmit={handleSubmit}
