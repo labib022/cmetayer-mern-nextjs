@@ -3,6 +3,8 @@ import authReducer from "./features/auth/authSlice";
 import { authApi } from "./features/auth/authApi";
 import { cleaningApi } from "./features/cleaning/cleaningApi";
 import { quoteApi } from "./features/quote/quoteApi";
+import { bookingsApi } from "./features/bookings/bookingsApi";
+import { profileApi } from "./features/profile/profileApi";
 
 export const store = configureStore({
   reducer: {
@@ -10,12 +12,16 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [cleaningApi.reducerPath]: cleaningApi.reducer,
     [quoteApi.reducerPath]: quoteApi.reducer,
+    [bookingsApi.reducerPath]: bookingsApi.reducer,
+    [profileApi.reducerPath]: profileApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(authApi.middleware)
       .concat(cleaningApi.middleware)
-      .concat(quoteApi.middleware),
+      .concat(quoteApi.middleware)
+      .concat(bookingsApi.middleware)
+      .concat(profileApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

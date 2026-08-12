@@ -6,6 +6,9 @@ export interface User {
   full_name?: string;
   email?: string;
   avatar?: string;
+  linkedin?: string;
+  github?: string;
+  twitter?: string;
   role?: string;
 }
 
@@ -61,6 +64,16 @@ const authSlice = createSlice({
         }
       }
     },
+    // Profile আপডেটের পর (name/avatar/social links) user object partially update করার জন্য —
+    // token ছোঁয়া হয় না, শুধু user data
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+        if (typeof window !== "undefined") {
+          localStorage.setItem("customer_user", JSON.stringify(state.user));
+        }
+      }
+    },
     logout: (state) => {
       state.access = null;
       state.refresh = null;
@@ -75,7 +88,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { hydrateAuth, setCredentials, setAccessToken, logout } =
+export const { hydrateAuth, setCredentials, setAccessToken, updateUser, logout } =
   authSlice.actions;
 
 export default authSlice.reducer;

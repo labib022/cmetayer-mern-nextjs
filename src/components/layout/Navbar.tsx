@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { logout } from "@/lib/redux/features/auth/authSlice";
 import { useSignOutMutation } from "@/lib/redux/features/auth/authApi";
+import { getAssetUrl } from "@/lib/getAssetUrl";
 
 const serviceDropdownItems = [
   { href: "/services/moving", label: "Moving Services" },
@@ -89,16 +90,15 @@ export default function Navbar() {
         />
       </Link>
 
-      {/* ── Desktop Nav Links ── */}
+      {/* ── Desktop Nav Links (Home / About / Services only) ── */}
       <div className="hidden md:flex gap-6 lg:gap-8 items-center">
         {/* Home Link */}
         <Link
           href="/"
-          className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 ${
-            pathname === "/"
-              ? "bg-white/10 border border-white/10 text-white font-semibold flex gap-[10px] items-center"
-              : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
-          }`}
+          className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 ${pathname === "/"
+            ? "bg-white/10 border border-white/10 text-white font-semibold flex gap-[10px] items-center"
+            : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
+            }`}
         >
           {pathname === "/" && (
             <span
@@ -112,11 +112,10 @@ export default function Navbar() {
         {/* About Link */}
         <Link
           href="/about"
-          className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 ${
-            pathname.startsWith("/about")
-              ? "bg-white/10 border border-white/10 text-white font-semibold flex gap-[10px] items-center"
-              : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
-          }`}
+          className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 ${pathname.startsWith("/about")
+            ? "bg-white/10 border border-white/10 text-white font-semibold flex gap-[10px] items-center"
+            : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
+            }`}
         >
           {pathname.startsWith("/about") && (
             <span
@@ -127,21 +126,15 @@ export default function Navbar() {
           <span>About</span>
         </Link>
 
-        {/* Services Dropdown */}
-        <div
-          ref={dropdownRef}
-          className="relative"
-          onMouseEnter={() => setServicesDropdownOpen(true)}
-          onMouseLeave={() => setServicesDropdownOpen(false)}
-        >
+        {/* Services Dropdown — click-only toggle now (hover handlers removed to fix flicker bug) */}
+        <div ref={dropdownRef} className="relative">
           <button
             type="button"
             onClick={() => setServicesDropdownOpen((prev) => !prev)}
-            className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-              isServicesActive
-                ? "bg-white/10 border border-white/10 text-white font-semibold"
-                : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
-            }`}
+            className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${isServicesActive
+              ? "bg-white/10 border border-white/10 text-white font-semibold"
+              : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
+              }`}
           >
             {isServicesActive && (
               <span
@@ -155,9 +148,8 @@ export default function Navbar() {
               height="14"
               viewBox="0 0 16 16"
               fill="none"
-              className={`transition-transform duration-200 ${
-                servicesDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-200 ${servicesDropdownOpen ? "rotate-180" : ""
+                }`}
               aria-hidden="true"
             >
               <path
@@ -182,15 +174,13 @@ export default function Navbar() {
                     className={`
                       px-3.5 py-2.5 rounded-[12px] text-[15px] font-medium transition-all duration-150
                       flex items-center justify-between
-                      ${
-                        isItemActive
-                          ? "bg-[#08203c] text-white"
-                          : "text-[#0b1714] hover:bg-[#08203c]/10 hover:text-[#08203c]"
+                      ${isItemActive
+                        ? "bg-[#08203c] text-white"
+                        : "text-[#0b1714] hover:bg-[#08203c]/10 hover:text-[#08203c]"
                       }
-                      ${
-                        index !== serviceDropdownItems.length - 1
-                          ? "border-b border-black/5"
-                          : ""
+                      ${index !== serviceDropdownItems.length - 1
+                        ? "border-b border-black/5"
+                        : ""
                       }
                     `}
                   >
@@ -217,25 +207,18 @@ export default function Navbar() {
             </div>
           )}
         </div>
+      </div>
 
+      {/* ── Right Side Actions: Login/User + Contact Us, grouped together ── */}
+      <div className="hidden md:flex items-center gap-3">
         {/* ── Auth Conditional Item (Login vs User Dropdown) ── */}
         {!isLoggedIn ? (
           <Link
             href="/login"
             id="navbar-login-btn"
-            className={`px-4 py-2 rounded-[20px] text-base leading-[1.4] whitespace-nowrap transition-all duration-200 ${
-              pathname.startsWith("/login")
-                ? "bg-white/10 border border-white/10 text-white font-semibold flex gap-[10px] items-center"
-                : "text-[#d8d8d8] font-normal hover:text-white hover:bg-white/5"
-            }`}
+            className="bg-white text-[#0b1714] font-semibold text-base px-6 py-2.5 rounded-[24px] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-md whitespace-nowrap"
           >
-            {pathname.startsWith("/login") && (
-              <span
-                className="block size-[10px] rounded-full bg-white shrink-0"
-                aria-hidden="true"
-              />
-            )}
-            <span>Login</span>
+            Login
           </Link>
         ) : (
           <div ref={userDropdownRef} className="relative">
@@ -246,8 +229,9 @@ export default function Navbar() {
               className="flex items-center gap-2.5 px-3 py-1.5 rounded-[20px] bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all cursor-pointer"
             >
               {user?.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={user.avatar}
+                  src={getAssetUrl(user.avatar)}
                   alt={user.full_name || "User Avatar"}
                   className="size-8 rounded-full object-cover border border-white/30"
                 />
@@ -264,9 +248,8 @@ export default function Navbar() {
                 height="14"
                 viewBox="0 0 16 16"
                 fill="none"
-                className={`transition-transform duration-200 ${
-                  userDropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-200 ${userDropdownOpen ? "rotate-180" : ""
+                  }`}
                 aria-hidden="true"
               >
                 <path
@@ -317,6 +300,31 @@ export default function Navbar() {
                   </svg>
                 </Link>
 
+
+                <Link
+                  href="/profile"
+                  id="nav-profile-link"
+                  onClick={() => setUserDropdownOpen(false)}
+                  className="px-3.5 py-2.5 rounded-[12px] text-[15px] font-medium text-[#0b1714] hover:bg-[#08203c]/10 hover:text-[#08203c] transition-all duration-150 flex items-center justify-between"
+                >
+                  <span>Profile</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="opacity-70"
+                  >
+                    <path
+                      d="M6 4l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
+
                 <button
                   type="button"
                   id="nav-logout-btn"
@@ -342,35 +350,35 @@ export default function Navbar() {
             )}
           </div>
         )}
-      </div>
 
-      {/* ── Contact Us Button ── */}
-      <Link
-        href="/contact"
-        id="navbar-contact-btn"
-        className="hidden md:flex bg-white items-center justify-between pl-6 pr-2 py-2 rounded-[24px] w-[166px] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-md"
-      >
-        <span className="font-semibold text-[#0b1714] text-base leading-[1.4] whitespace-nowrap">
-          Contact Us
-        </span>
-        <div className="bg-[#08203c] flex items-center justify-center p-2 rounded-[20px] size-[34px] shrink-0">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M3 8h10M9 4.5l3.5 3.5L9 11.5"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-      </Link>
+        {/* ── Contact Us Button ── */}
+        <Link
+          href="/contact"
+          id="navbar-contact-btn"
+          className="bg-white flex items-center justify-between pl-6 pr-2 py-2 rounded-[24px] w-[166px] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 ease-in-out cursor-pointer shadow-md"
+        >
+          <span className="font-semibold text-[#0b1714] text-base leading-[1.4] whitespace-nowrap">
+            Contact Us
+          </span>
+          <div className="bg-[#08203c] flex items-center justify-center p-2 rounded-[20px] size-[34px] shrink-0">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 8h10M9 4.5l3.5 3.5L9 11.5"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        </Link>
+      </div>
 
       {/* ── Mobile Hamburger ── */}
       <button
@@ -465,6 +473,15 @@ export default function Navbar() {
               >
                 My Bookings
               </Link>
+
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3 text-[#d8d8d8] hover:text-white hover:bg-white/10 rounded-xl transition-colors text-sm"
+              >
+                Profile
+              </Link>
+
               <button
                 type="button"
                 onClick={handleLogout}
