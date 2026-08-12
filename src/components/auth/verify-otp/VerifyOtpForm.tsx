@@ -118,7 +118,7 @@ export default function VerifyOtpForm() {
     setSuccessMsg("");
 
     try {
-      await verifyOtp({
+      const res = await verifyOtp({
         email: displayEmail,
         otp: otpCode,
         purpose: purposeParam,
@@ -127,7 +127,13 @@ export default function VerifyOtpForm() {
       if (purposeParam === "signup") {
         router.push("/login?verified=true");
       } else {
-        router.push(`/reset-password?email=${encodeURIComponent(displayEmail)}`);
+        // reset_token ছাড়া reset-password page কাজ করবে না (backend এখন এটা enforce করে)
+        const tokenParam = res.reset_token
+          ? `&reset_token=${encodeURIComponent(res.reset_token)}`
+          : "";
+        router.push(
+          `/reset-password?email=${encodeURIComponent(displayEmail)}${tokenParam}`
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -206,8 +212,8 @@ export default function VerifyOtpForm() {
             onClick={handleResend}
             disabled={timerSeconds > 0 || isResending}
             className={`font-semibold underline transition-colors ${timerSeconds > 0 || isResending
-                ? "text-[#656565] cursor-not-allowed no-underline"
-                : "text-[#08203c] hover:text-[#0b1714] cursor-pointer"
+              ? "text-[#656565] cursor-not-allowed no-underline"
+              : "text-[#08203c] hover:text-[#0b1714] cursor-pointer"
               }`}
           >
             {isResending ? "Sending..." : "Send Again"}

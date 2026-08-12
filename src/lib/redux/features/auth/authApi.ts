@@ -24,9 +24,12 @@ export const authApi = createApi({
       },
     }),
 
-    // Verify OTP
-    verifyOtp: builder.mutation({
-      query: (data: { email: string; otp: string; purpose?: string }) => {
+    // Verify OTP — response now includes reset_token when purpose is password_reset
+    verifyOtp: builder.mutation<
+      { success: boolean; message: string; reset_token?: string },
+      { email: string; otp: string; purpose?: string }
+    >({
+      query: (data) => {
         const fd = new FormData();
         fd.append("email", data.email);
         fd.append("otp", data.otp);
@@ -65,17 +68,19 @@ export const authApi = createApi({
       },
     }),
 
-    // Reset Password
+    // Reset Password — now requires reset_token from verifyOtp response
     resetPassword: builder.mutation({
       query: (data: {
         email: string;
         new_password: string;
         confirm_password: string;
+        reset_token: string;
       }) => {
         const fd = new FormData();
         fd.append("email", data.email);
         fd.append("new_password", data.new_password);
         fd.append("confirm_password", data.confirm_password);
+        fd.append("reset_token", data.reset_token);
         return { url: "/reset-password", method: "POST", body: fd };
       },
     }),

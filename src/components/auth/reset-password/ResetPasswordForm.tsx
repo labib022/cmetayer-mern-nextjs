@@ -13,6 +13,7 @@ export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || "";
+  const resetTokenParam = searchParams.get("reset_token") || "";
 
   const [formData, setFormData] = useState<ResetPasswordFormState>({
     newPassword: "",
@@ -50,6 +51,12 @@ export default function ResetPasswordForm() {
       setValidationError("Missing email address. Please request a new password reset OTP.");
       return;
     }
+    if (!resetTokenParam) {
+      setValidationError(
+        "Your reset session is missing or expired. Please verify your OTP again."
+      );
+      return;
+    }
 
     setValidationError("");
 
@@ -58,10 +65,11 @@ export default function ResetPasswordForm() {
         email: emailParam,
         new_password: formData.newPassword,
         confirm_password: formData.confirmPassword,
+        reset_token: resetTokenParam,
       }).unwrap();
 
       router.push("/login");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setValidationError(
         err?.data?.message || err?.message || "Failed to reset password. Please try again."
@@ -86,7 +94,7 @@ export default function ResetPasswordForm() {
         <div className="w-full bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-[12px] flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
             <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" />
+            <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span>{validationError}</span>
