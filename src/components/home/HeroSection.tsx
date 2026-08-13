@@ -54,8 +54,8 @@ export default async function HeroSection() {
         {/* Headline + Subtitle */}
         <div className="flex flex-col gap-6 lg:gap-8">
           <h1 className="font-medium text-[clamp(36px,5.5vw,64px)] leading-[1.2] tracking-[-2.496px]">
-            <span className="text-[#eceef0]">{titleLine1} </span>
-            <span className="text-white">{titleLine2}</span>
+            <span className="text-[#eceef0] block">{titleLine1}</span>
+            <span className="text-white block">{titleLine2}</span>
           </h1>
           <p className="font-normal text-[clamp(16px,1.5vw,20px)] leading-[1.4] text-[#e8ede4] max-w-[540px]">
             {subtitle}
