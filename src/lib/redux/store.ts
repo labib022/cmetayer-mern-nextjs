@@ -5,6 +5,7 @@ import { cleaningApi } from "./features/cleaning/cleaningApi";
 import { quoteApi } from "./features/quote/quoteApi";
 import { bookingsApi } from "./features/bookings/bookingsApi";
 import { profileApi } from "./features/profile/profileApi";
+import { contactApi } from "./features/contact/contactApi";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     [quoteApi.reducerPath]: quoteApi.reducer,
     [bookingsApi.reducerPath]: bookingsApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
+    [contactApi.reducerPath]: contactApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -21,7 +23,8 @@ export const store = configureStore({
       .concat(cleaningApi.middleware)
       .concat(quoteApi.middleware)
       .concat(bookingsApi.middleware)
-      .concat(profileApi.middleware),
+      .concat(profileApi.middleware)
+      .concat(contactApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
