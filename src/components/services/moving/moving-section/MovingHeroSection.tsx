@@ -1,6 +1,33 @@
 import Navbar from "@/components/layout/Navbar";
 
-export default function MovingHeroSection() {
+const DEFAULT_HEADING = "Moving & Packing Services";
+const DEFAULT_DESCRIPTION =
+  "Easygoing moving, whether it's around the block or across the country, with expert packing to help you out.";
+
+interface HeroContent {
+  heading?: string;
+  description?: string;
+}
+
+async function getContent(): Promise<HeroContent | null> {
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8123/api";
+    const res = await fetch(`${apiBase}/cms?page_name=moving&section_name=hero`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data?.[0]?.content ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function MovingHeroSection() {
+  const content = await getContent();
+  const heading = content?.heading || DEFAULT_HEADING;
+  const description = content?.description || DEFAULT_DESCRIPTION;
+
   return (
     <div className="p-2 mb-12 sm:mb-16">
       <div
@@ -16,17 +43,14 @@ export default function MovingHeroSection() {
           relative
         "
       >
-        {/* Navbar */}
         <Navbar />
 
-        {/* Hero headline & subtext */}
         <div className="flex flex-col items-center justify-center text-center gap-6 max-w-[860px] mx-auto z-10">
           <h1 className="font-medium text-[clamp(36px,5vw,56px)] leading-[1.15] text-white tracking-[-1.872px]">
-            Moving &amp; Packing Services
+            {heading}
           </h1>
           <p className="font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-[#e8ede4] max-w-[640px] opacity-90">
-            Easygoing moving, whether it&apos;s around the block or across the
-            country, with expert packing to help you out.
+            {description}
           </p>
         </div>
       </div>
